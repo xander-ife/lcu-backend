@@ -1,0 +1,138 @@
+// Prisma schema for LCU Timetable System
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  LECTURER
+  STUDENT
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  // staffId / matric / admin username — unique login identifier
+  loginId   String   @unique
+  name      String
+  email     String   @unique
+  password  String
+  role      Role
+  // optional links
+  lecturer  Lecturer?
+  student   Student?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([role])
+}
+
+model Department {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  color     String?
+  courses   Course[]
+  lecturers Lecturer[]
+  students  Student[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Course {
+  id            Int      @id @default(autoincrement())
+  code          String   @unique
+  title         String
+  units         Int      @default(3)
+  level         Int
+  semester      Int
+  population    Int      @default(0)
+  contactHours  Int      @default(3)
+  departmentId  Int
+  department    Department @relation(fields: [departmentId], references: [id])
+  lecturers     LecturerCourse[]
+  schedules     Schedule[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([departmentId])
+  @@index([level, semester])
+}
+
+model Lecturer {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  staffId      String   @unique
+  departmentId Int
+  department   Department @relation(fields: [departmentId], references: [id])
+  maxHours     Int      @default(12)
+  courses      LecturerCourse[]
+  schedules    Schedule[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([departmentId])
+}
+
+model LecturerCourse {
+  lecturerId Int
+  courseId   Int
+  lecturer   Lecturer @relation(fields: [lecturerId], references: [id], onDelete: Cascade)
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@id([lecturerId, courseId])
+}
+
+model Student {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  matricNumber String   @unique
+  departmentId Int
+  department   Department @relation(fields: [departmentId], references: [id])
+  level        Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([departmentId, level])
+}
+
+model Room {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  capacity    Int
+  type        String   // Lecture Theatre, Classroom, Computer Lab
+  projector   Boolean  @default(false)
+  smartBoard  Boolean  @default(false)
+  ac          Boolean  @default(false)
+  lab         Boolean  @default(false)
+  schedules   Schedule[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Schedule {
+  id         Int      @id @default(autoincrement())
+  courseId   Int
+  lecturerId Int?
+  roomId     Int
+  day        String   // Monday..Friday
+  timeSlot   Int      // index into TIME_SLOTS
+  duration   Int      @default(2)
+  semester   Int      @default(2)
+  session    String   @default("2025/2026")
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lecturer   Lecturer? @relation(fields: [lecturerId], references: [id])
+  room       Room     @relation(fields: [roomId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([roomId, day, timeSlot, session, semester])
+  @@index([courseId])
+  @@index([lecturerId])
+  @@index([day, timeSlot])
+}
