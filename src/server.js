@@ -57,6 +57,7 @@ app.use("/api/courses", courseRoutes);
 app.use("/api/lecturers", lecturerRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api/schedules", scheduleRoutes);
+app.use("/api/pdf", require("./routes/pdf"));
 
 // ── 404 + error handler ────────────────────────────────────────────────────
 app.use(notFound);
