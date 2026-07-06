@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const PDFDocument = require("pdfkit");
 const { PrismaClient } = require("@prisma/client");
-const { protect } = require("../middleware/auth");
+const { protect } = require("../middleware/auth.middleware");
 
 const prisma = new PrismaClient();
 
