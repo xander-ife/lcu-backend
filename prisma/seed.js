@@ -90,14 +90,14 @@ async function main() {
 
   // Student
   await prisma.user.upsert({
-    where: { loginId: "LCU/SE/2021/001" },
+    where: { loginId: "LCU/UG/22/21758" },
     update: {},
     create: {
-      loginId: "LCU/SE/2021/001", name: "Jane Student", email: "jane@lcu.edu.ng",
+      loginId: "LCU/UG/22/21758", name: "Jane Student", email: "jane@lcu.edu.ng",
       password: pw, role: "STUDENT",
       student: {
         create: {
-          matricNumber: "LCU/SE/2021/001",
+          matricNumber: "LCU/UG/22/21758",
           departmentId: deptByName["Software Engineering"].id,
           level: 400,
         },
