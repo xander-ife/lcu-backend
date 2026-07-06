@@ -93,7 +93,7 @@ async function main() {
     where: { loginId: "LCU/UG/22/21758" },
     update: {},
     create: {
-      loginId: "LCU/UG/22/21758", name: "Jane Student", email: "jane@lcu.edu.ng",
+      loginId: "LCU/UG/22/21758", name: "EZEASOR shedrach ifechukwu", email: "ezeasor@lcu.edu.ng",
       password: pw, role: "STUDENT",
       student: {
         create: {
@@ -108,7 +108,7 @@ async function main() {
   console.log("✅ Seed complete. Demo logins (password: password123):");
   console.log("   admin / admin");
   console.log("   lecturer / LCU/SE/001");
-  console.log("   student / LCU/SE/2021/001");
+  console.log("   student / LCU/UG/22/21758");
 }
 
 main()
