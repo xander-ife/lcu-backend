@@ -67,13 +67,18 @@ exports.generate = asyncHandler(async (_req, res) => {
 
   const created = [];
 
-  for (const course of courses) {
-    const room = findRoom(course.population);
-    const lecturer = findLecturer(course.id);
-    let placed = false;
+  for (let courseIdx = 0; courseIdx < courses.length; courseIdx++) {
+  const course = courses[courseIdx];
+  const room = findRoom(course.population);
+  const lecturer = findLecturer(course.id);
+  let placed = false;
 
-    for (const day of DAYS) {
-      if (placed) break;
+  // Rotate starting day for each course to spread across all 5 days
+  const startDay = courseIdx % DAYS.length;
+  const rotatedDays = [...DAYS.slice(startDay), ...DAYS.slice(0, startDay)];
+
+  for (const day of rotatedDays) {
+    if (placed) break;
       for (let slot = 0; slot < TIME_SLOT_COUNT - 1; slot++) {
         const sKey = `${room.id}|${day}|${slot}`;
         const lKey = lecturer ? `${lecturer.id}|${day}|${slot}` : null;
